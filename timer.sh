@@ -8,7 +8,7 @@ totaltime=${1:-60}
 # time display mode can be: "hide" or "display"
 mode=${3:-display}
 
-printf "\n\t${BWHITE}starting timer ($((date +"%T")))\n\n\tducking in $totaltime minutes ...\n\n"
+echo -e "\n\t${BWHITE}starting timer ($(date +"%T"))\n\n\tducking in $totaltime minutes ...\n\n"
 
 for (( time=1; time<=$totaltime; time++ )) do
 	sleep 60
