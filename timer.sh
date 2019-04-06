@@ -9,13 +9,12 @@ totaltime=${1:-60}
 # time display mode can be: "hide" or "display"
 mode=${3:-display}
 
-# echo -e "\nstarting minutor\nducking in $totaltime minutes ...\n"
-printf "\n${BWHITE}starting minutor\nducking in $totaltime minutes ...\n"
+printf "\n\t${BWHITE}starting timer\n\n\tducking in $totaltime minutes ...\n\n"
 
 for (( c=1; c<=$totaltime; c++ )) do
 	sleep 60
 	time=$c
-	if [[ $mode == "display" ]] && [[ $(($time % 5)) == 0]]; then
+	if [[ $mode == "display" ]] && [[ $(($time % 5)) == 0 ]]; then
 		# echo -e "\e[1m$time minutes"
 		printf "$time minutes"
 	fi

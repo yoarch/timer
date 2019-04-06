@@ -1,19 +1,15 @@
 # timer
 a simple timer/minutor for terminal
 
-a very simple terminal timer in minutes that will play a song and display a message when the time is over.
+a very simple terminal timer in minute that will play a song and display a message when time is over.
 
 # installation
 ```sh
-with yay:
 yay -a timer
-
-with yaourt:
+or
 yaourt -a timer
 ```
 
-# compatibility
-bash
 
 # usage
 <pre>
