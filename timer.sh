@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# RED='\033[0;31m'
 BWHITE='\033[1m' # bold white
 NC='\033[0m' # No Color
 
@@ -11,21 +10,15 @@ mode=${3:-display}
 
 printf "\n\t${BWHITE}starting timer\n\n\tducking in $totaltime minutes ...\n\n"
 
-for (( c=1; c<=$totaltime; c++ )) do
+for (( time=1; time<=$totaltime; time++ )) do
 	sleep 60
-	time=$c
-	if [[ $mode == "display" ]] && [[ $(($time % 5)) == 0 ]]; then
+	if [[ $mode == "display" ]] && [[ $(($time % 300)) == 0 ]]; then
 		# echo -e "\e[1m$time minutes"
-		printf "$time minutes"
+		echo -e "\t\t$time minutes"
 	fi
 done
+echo -e "\n\tend of the time\n"
 
+mpv ${2:-/usr/share/sounds/timer/duck.wav > /dev/null 2>&1 &}
 
-printf "I ${BWHITE}love${NC} Stack Overflow\n"
-
-echo -e "end of the time\n"
-# echo -e "\e[1mend of the time\n"
-
-mpv ${2:-$MHOME/dev/inputs/utopia_alarm.mp3 > /dev/null 2>&1 &}
-
-echo "\e[1mmpv pid: $$${NC}"
+echo -e "mpv pid: $$${NC}\n"
