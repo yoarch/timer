@@ -1,9 +1,28 @@
 #!/bin/bash
 
+function check_args {
+	if [ -z $1 ]; then
+		echo -e "\n\t${BWHITE}needs at least one argument being the time in minute you want the timer to stop in\n\tfor 2 minutes enter:\n\ttimer 2"
+		exit 1
+	fi
+
+	if [ "$#" -eq 1 ] && ([[ $1 == "-h" ]] || [[ $1 == "--help" ]]); then
+    cat /usr/lib/timer/README.md
+		exit 0
+	fi
+
+	if ! [[ "$1" =~ ^[0-9]+$ ]]; then
+		echo -e "\n\t${BWHITE}first argument must be an integer being the time in minute you want the timer to stop in\n\tfor 2 minutes enter:\n\ttimer 2"
+		exit 1
+	fi
+}
+
 BWHITE='\033[1m' # bold white
 NC='\033[0m' # no color
 
-totaltime=${1:-60}
+check_args "$@"
+
+totaltime=$1
 
 # time display mode can be: "hide" or "display"
 mode=${3:-display}
