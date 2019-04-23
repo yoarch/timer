@@ -25,6 +25,11 @@ yaourt -a timer
 
 # examples
 for help:<br/>
+```sh
+timer -h
+or
+timer --help
+```
 time in 30 seconds
 ```sh
 timer 30 s
