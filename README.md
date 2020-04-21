@@ -1,9 +1,9 @@
 # timer
-a simple timer for terminal
+Simple CLI timer
 
-a very simple terminal timer in second, minute or hour, that will play a song and display a message when time is over.
+A simple terminal timer supporting second, minute and hour, playing a song and displaying a message when time is over.
 
-# installation
+# Installation
 ```sh
 yay -a timer
 or
@@ -11,7 +11,7 @@ yaourt -a timer
 ```
 
 
-# usage
+# Usage
 <pre>
 <b>timer</b> [TOTAL_TIME] [TIME_MODE] [AUDIO_PATH] [DISPLAY_MODE]
 <b>options:</b>
@@ -23,8 +23,8 @@ yaourt -a timer
 </pre>
 
 
-# examples
-for help:<br/>
+# Examples
+For help:<br/>
 ```sh
 timer -h
 or

@@ -8,7 +8,7 @@ function check_args {
 	fi
 
 	if [ -z $2 ]; then
-		echo -e "\n\t${BWHITE}needs at least two arguments being the time in timemode\n\tfor 2 minutes enter:\n\ttimer 2 m"
+		echo -e "\n\t${BWHITE}needs at least two arguments being the time in time_mode\n\tfor 2 minutes enter:\n\ttimer 2 m"
 		exit 1
 	fi
 
@@ -37,16 +37,16 @@ NC='\033[0m' # no color
 
 check_args "$@"
 
-totaltime=$1
-# timemode can be "h": hours, "m": minutes, "s": seconds
-timemode=$2
+total_time=$1
+# time_mode can be "h": hours, "m": minutes, "s": seconds
+time_mode=$2
 
 # time display mode can be: "hide" or "display"
 mode=${4:-display}
 
-args_to_scds $totaltime $timemode
+args_to_scds $total_time $time_mode
 
-echo -e "\n\t${BWHITE}starting timer ($(date +"%T"))\n\n\tducking in $totaltime$timemode ...\n\n"
+echo -e "\n\t${BWHITE}starting timer ($(date +"%T"))\n\n\tducking in $total_time$time_mode ...\n\n"
 
 i=0
 for (( time_s=1; time_s<=$x_seconds; time_s++ )) do
@@ -63,5 +63,3 @@ echo -e "\n\tend of the time\n"
 
 audio_path=${3:-"/usr/share/sounds/timer/duck.wav"}
 mpv $audio_path > /dev/null 2>&1 &
-
-echo -e "mpv pid: $$${NC}\n"
