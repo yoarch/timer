@@ -30,15 +30,15 @@ timer -h
 or
 timer --help
 ```
-time in 30 seconds
+Time in 30 seconds
 ```sh
 timer 30 s
 ```
-time in 50 minutes
+Time in 50 minutes
 ```sh
 timer 50 m ~/audio/duck_song.mp3
 ```
-time in 2 hours
+Time in 2 hours
 ```sh
 timer 2 h ~/audio/duck_song.mp3 hide
 ```
