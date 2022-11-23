@@ -1,23 +1,5 @@
 #!/bin/bash
 
-function check_args {
-
-	if [ "$#" -eq 1 ] && ([[ $1 == "-h" ]] || [[ $1 == "--help" ]]); then
-    cat /usr/lib/timer/README.md
-		exit 0
-	fi
-
-	if [ -z $2 ]; then
-		echo -e "\n\t${BWHITE}needs at least two arguments being the time in time_mode\n\tfor 2 minutes enter:\n\ttimer 2 m"
-		exit 1
-	fi
-
-	if ! [[ "$1" =~ ^[0-9]+$ ]]; then
-		echo -e "\n\t${BWHITE}first argument must be an integer being the time in minute you want the timer to stop in\n\tfor 2 minutes enter:\n\ttimer 2"
-		exit 1
-	fi
-}
-
 function args_to_scds {
 	x_seconds=0
 	if [[ $2 == "h" ]]; then
@@ -28,38 +10,106 @@ function args_to_scds {
 		x_seconds=$1
 	else
 		echo -e "$2 arg is not supported, please enter \"h\", \"m\" or \"s\""
-		return 1
+		exit 1
 	fi
 }
 
-BWHITE='\033[1m' # bold white
-NC='\033[0m' # no color
+input_args_as_array=( "$@" )
 
-check_args "$@"
+BWHITE='\033[1m'
+BORANGE='\e[1;38;5;202m'
+BRED='\e[1;38;5;196m'
+NC='\033[0m'
 
-total_time=$1
-# time_mode can be "h": hours, "m": minutes, "s": seconds
-time_mode=$2
+if [ "$#" -eq 1 ] && ([[ $1 == "-h" ]] || [[ $1 == "--help" ]]); then
+	cat /usr/lib/timer/README.md
+	exit 0
+fi
 
-# time display mode can be: "hide" or "display"
-mode=${4:-display}
+first_argument_error_msg="\n\t${BWHITE}First argument must be either an integer for the number of following time unit or an intenger sticked to a time unit\n\tSuch as:\n\t\ttimer 2\n\t\tor\n\t\ttimer 2 h\n\t\tor\n\t\ttimer 2h${NC}"
 
+if [ -z $1 ]; then
+	echo -e "$first_argument_error_msg"
+	exit 1
+fi
+
+next_argument_to_treat_index=1
+if [[ $1 =~ ^[0-9]*[hms]$ ]]; then
+	total_time=${1::-1}
+	time_mode=${1: -1}
+elif [[ $1 =~ ^[0-9]*$ ]]; then
+	total_time=$1
+
+	if [[ $2 =~ ^[hms]$ ]]; then
+		time_mode=$2
+		next_argument_to_treat_index=2
+	else
+		time_mode="s"
+	fi
+else
+	echo -e "$first_argument_error_msg"
+	exit 1
+fi
+
+next_arg=${input_args_as_array[$next_argument_to_treat_index]}
+
+if [ -z $next_arg ]; then
+	timer_nb=1
+	audio_info=""
+else
+	if [[ $next_arg =~ ^inf.*$ ]]; then
+		timer_nb=1000000
+		audio_info=${input_args_as_array[$next_argument_to_treat_index+1]}
+	elif [[ $next_arg =~ ^[0-9]*$ ]]; then
+		timer_nb=$next_arg
+		audio_info=${input_args_as_array[$next_argument_to_treat_index+1]}
+	elif [[ "$next_arg" == "no_audio" ]] || [ -f "$next_arg" ]; then
+		timer_nb=1
+		audio_info="$next_arg"
+	else
+		echo -e "\n\t${BORANGE}[WARNING]${NC} Argument ${BWHITE}$next_arg${NC} is not a known timers number neither an audio file path. Aborting."
+		exit 1
+	fi
+fi
+
+play_audio=true
+if [ -z $audio_info ]; then
+	audio_path="/usr/share/sounds/timer/duck.wav"
+elif [[ "$audio_info" == "no_audio" ]]; then
+	play_audio=false
+elif [ -f "$audio_info" ]; then
+	audio_path="$audio_info"
+elif ! [ -f "$audio_info" ]; then
+    echo -e "\n\t${BORANGE}[WARNING]${NC} Audio path ${BWHITE}$audio_info${NC} doesn't exist. Setting default audio path ${BWHITE}/usr/share/sounds/timer/duck.wav${NC}"
+	audio_path="/usr/share/sounds/timer/duck.wav"
+fi
+
+# Display timer settings
+if $play_audio ; then
+	echo -e "\n\n\tTime between timers: ${BWHITE}$total_time$time_mode${NC}\n\tTimers number: ${BWHITE}$timer_nb${NC}\n\tAudio file: ${BWHITE}$audio_path${NC}"
+else
+	echo -e "\n\n\tTime between timers: ${BWHITE}$total_time$time_mode${NC}\n\tTimers number: ${BWHITE}$timer_nb${NC}\n\tAudio: ${BWHITE}OFF${NC}"
+fi
 args_to_scds $total_time $time_mode
 
-echo -e "\n\t${BWHITE}starting timer ($(date +"%T"))\n\n\tducking in $total_time$time_mode ...\n\n"
+# Starting timer message
+echo -e "\n\n\t${BWHITE}Starting timer at $(date +"%T")"
+if [ "$timer_nb" -eq "1000000" ]; then
+	echo -e "\t\tTiming every ${BWHITE}$total_time$time_mode${NC} ...\n"
+elif [[ $timer_nb = 1 ]]; then
+	echo -e "\t\tTiming in ${BWHITE}$total_time$time_mode${NC} without repetition ...\n"
+elif [[ $timer_nb =~ ^[0-9]*$ ]]; then
+	echo -e "\t\tTiming every ${BWHITE}$total_time$time_mode .. $timer_nb${NC} times ...\n"
+fi
 
+# Starting timer loop
 i=0
-for (( time_s=1; time_s<=$x_seconds; time_s++ )) do
-	sleep 1
-	if [[ $mode == "display" ]] && [[ $(($time_s % 60)) == 0 ]]; then
-		i=$((i+1))
-		printf "\n$i: "
-		for (( d=1; d<=$i; d++ )) do
-			printf "."
-		done
+while ((i<$timer_nb))
+do
+	sleep $x_seconds
+	((i+=1))
+	echo -e "\t\tTimer $i"
+	if $play_audio ; then
+		mpv $audio_path --really-quiet
 	fi
 done
-echo -e "\n\tend of the time\n"
-
-audio_path=${3:-"/usr/share/sounds/timer/duck.wav"}
-mpv $audio_path > /dev/null 2>&1 &
