@@ -108,7 +108,7 @@ while ((i<$timer_nb))
 do
 	sleep $x_seconds
 	((i+=1))
-	echo -e "\t\tTimer $i"
+	echo -e "\t\t${BWHITE}Timer $i${NC} ($(date +"%T"))"
 	if $play_audio ; then
 		mpv $audio_path --really-quiet
 	fi
