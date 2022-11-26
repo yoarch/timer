@@ -110,6 +110,6 @@ do
 	((i+=1))
 	echo -e "\t\t${BWHITE}Timer $i${NC} ($(date +"%T"))"
 	if $play_audio ; then
-		mpv $audio_path --really-quiet
+		mpv $audio_path --really-quiet > /dev/null 2>&1 &
 	fi
 done
