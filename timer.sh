@@ -1,5 +1,15 @@
 #!/bin/bash
 
+player="" #set custom player
+
+if [ "$player" == "" ]
+then
+  case "$OSTYPE" in
+    darwin*)  player=afplay ;; 
+    *)        player=aplay ;; #assume linux, use alsa
+  esac
+fi
+
 function args_to_scds {
 	x_seconds=0
 	if [[ $2 == "h" ]]; then
@@ -110,6 +120,6 @@ do
 	((i+=1))
 	echo -e "\t\t${BWHITE}Timer $i${NC} ($(date +"%T"))"
 	if $play_audio ; then
-		mpv $audio_path --really-quiet > /dev/null 2>&1 &
+		$player $audio_path > /dev/null 2>&1 &
 	fi
 done
